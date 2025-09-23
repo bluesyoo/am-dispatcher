@@ -44,11 +44,11 @@ public class BiddingTaskDto {
 	private Double previousError;
 	private Double integralError;
 	
-	private String pidClusterId;
+	private Integer pidClusterId;
 	private PidGains pidGains;
 	
 	// api 정보
-	private String customerId;
+	private Long accountNo;
 	private String accessLicense;
 	private String secretKey;
 	

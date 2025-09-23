@@ -1,6 +1,5 @@
 package kr.co.admonster.dispatcher.service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +41,8 @@ public class DispatcherService {
 			List<String> keywordIds = new ArrayList<>();
 			
 			for (BiddingTaskDto task : tasks) {
+				keywordIds.add(task.getKeywordId());
+				
 				BiddingTaskMessage taskMessage = BiddingTaskMessage.builder()
 						.messageType(MessageType.BIDDING)
 						.keywordId(task.getKeywordId())
@@ -51,6 +52,7 @@ public class DispatcherService {
 						.deviceType(task.getDeviceType())
 						.campaignType(task.getCampaignType())
 						.biddingType(task.getBiddingType())
+						.minBid(task.getMinBid())
 						.maxBid(task.getMaxBid())
 						
 						.targetRank(task.getTargetRank())
@@ -60,9 +62,10 @@ public class DispatcherService {
 						.previousError(task.getPreviousError()) // 초기화
 						.integralError(task.getIntegralError()) // 초기화
 						
+						.pidClusterId(task.getPidClusterId())
 						.pidGains(task.getPidGains())
 						
-						.customerId(task.getCustomerId())
+						.accountNo(task.getAccountNo())
 						.accessLicense(task.getAccessLicense())
 						.secretKey(task.getSecretKey())
 						.build();
@@ -72,7 +75,7 @@ public class DispatcherService {
 			}
 			
 			// 4. 다음 입찰 시간 업데이트 로직 추가
-			this.biddingTaskDao.updateNextTm(keywordIds, LocalDateTime.now());
+			this.biddingTaskDao.updateNextTm(keywordIds);
 			
 			log.info("### DispatcherService finished. ###");
 		}
