@@ -1,0 +1,55 @@
+spring:
+  application:
+    instance-id: dispatcher
+    locale: ko-KR
+    name: am-dispatcher
+  profiles:
+    active: global
+
+---
+spring:
+  config:
+    activate:
+      on-profile: global
+
+  datasource: ## main db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/aptrk_prod?allowPublicKeyRetrieval=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&useCursorFetch=true&useSSL=false
+    username: bizspring
+    password: gnirpszib
+    hikari:
+      auto-commit: false                # 트랜잭션 수동 제어. Batch/JPA 환경에서는 false 권장
+      connection-timeout: 30000         # 커넥션 획득을 기다리는 최대 시간 (밀리초), 기본값 유지
+      idle-timeout: 600000              # 유휴 커넥션이 풀에서 제거되기까지의 최대 유휴 시간 (밀리초), 기본 10분
+      keepalive-time: 300000            # 장수 커넥션을 주기적으로 ping (5분 간격). 방화벽/NAT 연결 끊김 방지
+      max-lifetime: 1700000             # 커넥션의 최대 수명 (밀리초), DB wait_timeout보다 작게 설정 (약 28분)
+      maximum-pool-size: 10             # 풀 최대 커넥션 수. 병렬 처리량에 따라 조정 (예: Batch 병렬 Step)
+      minimum-idle: 5                   # 풀에서 유지할 최소 유휴 커넥션 수. 대기 없이 빠른 처리용
+      pool-name: am-dispatcher          # 커넥션 풀 식별용 이름 (로그나 모니터링 시 유용)
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+      - localhost:9093
+      - localhost:9094
+    client-id: am-dispatcher            # 클라이언트 식별자 (로깅 등 추적용)
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all                         # all: 리더 + 팔로워 모두 ack
+      retries: 3                        # 전송 실패 시 재시도 횟수
+      batch-size: 16384                 # 배치 전송 크기 (바이트)
+      linger-ms: 1                      # 지정 시간(ms) 내 대기 후 배치 전송
+      buffer-memory: 33554432           # 버퍼 메모리 (바이트)
+    properties:
+      security.protocol: PLAINTEXT      # SASL/SSL 등 보안 설정 가능
+
+logging:
+  config: classpath:./log4j2-devel.xml
+
+app:
+  project:
+    namespace: adm

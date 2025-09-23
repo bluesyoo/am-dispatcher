@@ -1,0 +1,40 @@
+spring:
+  application:
+    instance-id: dispatcher
+    locale: ko-KR
+    name: am-dispatcher
+  profiles:
+    active: global
+
+---
+spring:
+  config:
+    activate:
+      on-profile: global
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+  kafka:
+    bootstrap-servers:
+      - localhost:9092
+      - localhost:9093
+      - localhost:9094
+    client-id: am-dispatcher            # 클라이언트 식별자 (로깅 등 추적용)
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all                         # all: 리더 + 팔로워 모두 ack
+      retries: 3                        # 전송 실패 시 재시도 횟수
+      batch-size: 16384                 # 배치 전송 크기 (바이트)
+      linger-ms: 1                      # 지정 시간(ms) 내 대기 후 배치 전송
+      buffer-memory: 33554432           # 버퍼 메모리 (바이트)
+    properties:
+      security.protocol: PLAINTEXT      # SASL/SSL 등 보안 설정 가능
+
+logging:
+  config: classpath:./log4j2-devel.xml
+
+app:
+  project:
+    namespace: adm
