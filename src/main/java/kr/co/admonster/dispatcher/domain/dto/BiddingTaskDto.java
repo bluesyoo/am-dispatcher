@@ -33,13 +33,12 @@ public class BiddingTaskDto {
 	private DeviceType deviceType;
 	private CampaignType campaignType;
 	private BiddingType biddingType;
-	private Double minBid;
-	private Double maxBid;
 	
 	// 입찰 실행 정보
 	private Integer targetRank;         // 목표 순위
 	private Double currentBid;          // 현재 입찰가
-	private Double presetBid;           // 설정 입찰가
+	private Double minimumBid;
+	private Double maximumBid;
 	
 	private Double previousError;
 	private Double integralError;
@@ -48,7 +47,7 @@ public class BiddingTaskDto {
 	private PidGains pidGains;
 	
 	// api 정보
-	private Long accountNo;
+	private String accountNo;
 	private String accessLicense;
 	private String secretKey;
 	

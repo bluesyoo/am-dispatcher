@@ -1,5 +1,7 @@
 package kr.co.admonster;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +15,7 @@ import kr.co.admonster.kafka.naming.MessageType;
 import kr.co.admonster.kafka.producer.MessageProducer;
 
 @SpringBootTest
-class AgentApplicationTests {
+class DispatcherApplicationTests {
 	
 	@Autowired
 	private MessageProducer messageProducer;
@@ -46,18 +48,19 @@ class AgentApplicationTests {
 	void contextLoads() throws Exception {
 		BiddingTaskMessage taskMessage = BiddingTaskMessage.builder()
 				.messageType(MessageType.BIDDING)
+				
+				.keywordId(UUID.randomUUID().toString())
 				.keyword("평택포장이사")
 				.displayUrl("m.mcygclean.com")
 				
 				.deviceType(DeviceType.MOBILE)
 				.campaignType(CampaignType.SHOPPING)
 				.biddingType(BiddingType.AI)
-				.minBid(70D)
-				.maxBid(200D)
 				
 				.targetRank(3)
 				.currentBid(160D)
-				.presetBid(0D)
+				.minimumBid(70D)
+				.maximumBid(200D)
 				
 				.previousError(0D)
 				.integralError(0D)
@@ -65,9 +68,9 @@ class AgentApplicationTests {
 				.pidClusterId(1)
 				.pidGains(new PidGains(0D, 0D, 0D, 1D))
 				
-				.accountNo(1L)
+				.accountNo("123456789")
 				.accessLicense("")
-				.secretKey("444")
+				.secretKey("")
 				.build();
 		
 		this.messageProducer.send(taskMessage);

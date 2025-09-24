@@ -30,14 +30,19 @@ public class DispatcherService {
 	}
 	
 	@Transactional
-	public void run() {
-		log.info("### DispatcherService started to find bidding tasks. ###");
+	public void execute() {
+		log.info("Start dispatcher job to find bidding_tasks.");
 		
-		// 1. 입찰이 필요한 키워드 조회
-		List<BiddingTaskDto> tasks = this.biddingTaskDao.findAll();
-		log.info("Found {} keywords to dispatch.", tasks.size());
-		
-		if (!tasks.isEmpty()) {
+		try {
+			// 1. 입찰이 필요한 키워드 조회
+			List<BiddingTaskDto> tasks = this.biddingTaskDao.findAll();
+			log.info("Found {} bidding_tasks to dispatch.", tasks.size());
+			
+			if (tasks.isEmpty()) {
+				log.warn("No bidding_task to dispatch.");
+				return;
+			}
+			
 			List<String> keywordIds = new ArrayList<>();
 			
 			for (BiddingTaskDto task : tasks) {
@@ -45,6 +50,7 @@ public class DispatcherService {
 				
 				BiddingTaskMessage taskMessage = BiddingTaskMessage.builder()
 						.messageType(MessageType.BIDDING)
+						
 						.keywordId(task.getKeywordId())
 						.keyword(task.getKeyword())
 						.displayUrl(task.getDisplayUrl())
@@ -52,12 +58,11 @@ public class DispatcherService {
 						.deviceType(task.getDeviceType())
 						.campaignType(task.getCampaignType())
 						.biddingType(task.getBiddingType())
-						.minBid(task.getMinBid())
-						.maxBid(task.getMaxBid())
 						
 						.targetRank(task.getTargetRank())
 						.currentBid(task.getCurrentBid())
-						.presetBid(task.getPresetBid())
+						.minimumBid(task.getMinimumBid())
+						.maximumBid(task.getMaximumBid())
 						
 						.previousError(task.getPreviousError()) // 초기화
 						.integralError(task.getIntegralError()) // 초기화
@@ -73,13 +78,15 @@ public class DispatcherService {
 				// 3. Kafka로 메시지 전송
 				this.messageProducer.send(taskMessage);
 			}
-			
+				
 			// 4. 다음 입찰 시간 업데이트 로직 추가
 			this.biddingTaskDao.updateNextTm(keywordIds);
 			
-			log.info("### DispatcherService finished. ###");
+			log.info("Completed dispatcher job successfully. dispatched_count={} keyword_ids={}", keywordIds.size(), keywordIds);
+		} catch (Exception e) {
+			log.error("Failed to run dispatcher job.", e);
+			throw e;
 		}
-		
 	}
 	
 }

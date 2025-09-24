@@ -18,9 +18,15 @@ public class BiddingScheduler {
 	}
 	
 	@Scheduled(cron = "${app.batch.job.aggregate-settle:*/20 * * * * ?}", zone = Constants.ZONE)
-	public void dispatch() {
-		log.info("Run dispatch.");
-		this.dispatcherService.run();
+	public void run() {
+		log.info("Start dispatch job.");
+		
+		try {
+			this.dispatcherService.execute();
+			log.info("Dispatch job completed successfully.");
+		} catch (Exception e) {
+			log.error("Failed to execute dispatch job.", e);
+		}
 	}
 	
 }
