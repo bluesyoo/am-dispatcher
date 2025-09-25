@@ -17,7 +17,7 @@ public class BiddingScheduler {
 		this.dispatcherService = dispatcherService;
 	}
 	
-	@Scheduled(cron = "${app.batch.job.aggregate-settle:*/20 * * * * ?}", zone = Constants.ZONE)
+	@Scheduled(cron = "${app.schedule.bidding-task:-}", zone = Constants.ZONE)
 	public void run() {
 		log.info("Start dispatch job.");
 		

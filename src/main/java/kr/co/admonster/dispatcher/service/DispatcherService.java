@@ -44,9 +44,11 @@ public class DispatcherService {
 			}
 			
 			List<String> keywordIds = new ArrayList<>();
+			List<String> keywords = new ArrayList<>();
 			
 			for (BiddingTaskDto task : tasks) {
 				keywordIds.add(task.getKeywordId());
+				keywords.add(task.getKeyword());
 				
 				BiddingTaskMessage taskMessage = BiddingTaskMessage.builder()
 						.messageType(MessageType.BIDDING)
@@ -82,7 +84,7 @@ public class DispatcherService {
 			// 4. 다음 입찰 시간 업데이트 로직 추가
 			this.biddingTaskDao.updateNextTm(keywordIds);
 			
-			log.info("Completed dispatcher job successfully. dispatched_count={} keyword_ids={}", keywordIds.size(), keywordIds);
+			log.info("Completed dispatcher job successfully. dispatched_count={} keyword_ids={} keywords={}", keywordIds.size(), keywordIds, keywords);
 		} catch (Exception e) {
 			log.error("Failed to run dispatcher job.", e);
 			throw e;

@@ -71,9 +71,9 @@ public class BiddingTaskDao {
 		query.append("LEFT JOIN\n");
 		query.append("    tb_pid_cluster AS t3 ON t1.pid_cluster_id = t3.id\n");
 		query.append("WHERE\n");
-		query.append("    t1.next_tm <= NOW()\n");
+		query.append("    t1.next_tm BETWEEN 0 AND UNIX_TIMESTAMP()\n");
 		query.append("ORDER BY\n");
-		query.append("    t1.next_tm ASC\n");
+		query.append("    t1.next_tm ASC, RAND()\n");
 		query.append("LIMIT 10\n");
 		
 		long now = System.currentTimeMillis();
@@ -98,7 +98,14 @@ public class BiddingTaskDao {
 	}
 	
 	public void updateNextTm(List<String> keywordIds) {
-		String query = "UPDATE tb_bidding_task SET next_tm = UNIX_TIMESTAMP() WHERE keyword_id IN (:ids)";
+		String query = """
+				UPDATE
+					tb_bidding_task
+				SET
+					next_tm = -1
+				WHERE
+					keyword_id IN (:ids)
+				""";
 		
 		try {
 			log.info("Update next_tm for bidding_task. keyword_ids_count={}", keywordIds.size());

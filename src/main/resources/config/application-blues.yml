@@ -36,12 +36,6 @@ spring:
       - localhost:9093
       - localhost:9094
     client-id: am-dispatcher            # 클라이언트 식별자 (로깅 등 추적용)
-    consumer:
-      group-id: am-group                # Kafka consumer group ID
-      auto-offset-reset: earliest       # 처음부터 읽기 (또는 latest)
-      enable-auto-commit: false         # 수동 커밋 권장
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -50,9 +44,6 @@ spring:
       batch-size: 16384                 # 배치 전송 크기 (바이트)
       linger-ms: 1                      # 지정 시간(ms) 내 대기 후 배치 전송
       buffer-memory: 33554432           # 버퍼 메모리 (바이트)
-    listener:
-      concurrency: 3                    # Consumer 동시 실행 수
-      ack-mode: manual                  # 수동 ack (manual 또는 manual_immediate)
     properties:
       security.protocol: PLAINTEXT      # SASL/SSL 등 보안 설정 가능
 
@@ -62,3 +53,6 @@ logging:
 app:
   project:
     namespace: adm
+
+  schedule:
+    bidding-task: "*/3 * * * * ?"
