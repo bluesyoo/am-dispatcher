@@ -102,7 +102,7 @@ public class BiddingTaskDao {
 				UPDATE
 					tb_bidding_task
 				SET
-					next_tm = -1
+					next_tm = -1 * UNIX_TIMESTAMP()
 				WHERE
 					keyword_id IN (:ids)
 				""";
